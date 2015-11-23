@@ -59,6 +59,7 @@ type TokenConfig struct {
 	privateKey libtrust.PrivateKey
 }
 
+// 配置校验
 func validate(c *Config) error {
 	if c.Server.ListenAddress == "" {
 		return errors.New("server.addr is required")
@@ -88,6 +89,7 @@ func validate(c *Config) error {
 			gac.HTTPTimeout = 10
 		}
 	}
+	//
 	if c.ACL == nil && c.ACLMongoConf == nil {
 		return errors.New("ACL is empty, this is probably a mistake. Use an empty list if you really want to deny all actions")
 	}
@@ -121,6 +123,7 @@ func LoadConfig(fileName string) (*Config, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not read %s: %s", fileName, err)
 	}
+	// 数据加载
 	c := &Config{}
 	if err = yaml.Unmarshal(contents, c); err != nil {
 		return nil, fmt.Errorf("could not parse config: %s", err)

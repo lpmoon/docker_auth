@@ -206,6 +206,7 @@ func (as *AuthServer) CreateToken(ar *AuthRequest, actions []string) (string, er
 	return fmt.Sprintf("%s%s%s", payload, token.TokenSeparator, joseBase64UrlEncode(sig)), nil
 }
 
+// 这里是真正提供http服务的地方
 func (as *AuthServer) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	glog.V(3).Infof("Request: %+v", req)
 	switch {
