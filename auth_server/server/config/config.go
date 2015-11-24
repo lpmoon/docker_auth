@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-package server
+package config
 
 import (
 	"crypto/tls"
@@ -45,8 +45,8 @@ type ServerConfig struct {
 	CertFile      string `yaml:"certificate,omitempty"`
 	KeyFile       string `yaml:"key,omitempty"`
 
-	publicKey  libtrust.PublicKey
-	privateKey libtrust.PrivateKey
+	PublicKey  libtrust.PublicKey
+	PrivateKey libtrust.PrivateKey
 }
 
 type TokenConfig struct {
@@ -55,8 +55,8 @@ type TokenConfig struct {
 	KeyFile    string `yaml:"key,omitempty"`
 	Expiration int64  `yaml:"expiration,omitempty"`
 
-	publicKey  libtrust.PublicKey
-	privateKey libtrust.PrivateKey
+	PublicKey  libtrust.PublicKey
+	PrivateKey libtrust.PrivateKey
 }
 
 // 配置校验
@@ -137,7 +137,7 @@ func LoadConfig(fileName string) (*Config, error) {
 		if c.Server.CertFile == "" || c.Server.KeyFile == "" {
 			return nil, fmt.Errorf("failed to load server cert and key: both were not provided")
 		}
-		c.Server.publicKey, c.Server.privateKey, err = loadCertAndKey(c.Server.CertFile, c.Server.KeyFile)
+		c.Server.PublicKey, c.Server.PrivateKey, err = loadCertAndKey(c.Server.CertFile, c.Server.KeyFile)
 		if err != nil {
 			return nil, fmt.Errorf("failed to load server cert and key: %s", err)
 		}
@@ -149,7 +149,7 @@ func LoadConfig(fileName string) (*Config, error) {
 		if c.Token.CertFile == "" || c.Token.KeyFile == "" {
 			return nil, fmt.Errorf("failed to load token cert and key: both were not provided")
 		}
-		c.Token.publicKey, c.Token.privateKey, err = loadCertAndKey(c.Token.CertFile, c.Token.KeyFile)
+		c.Token.PublicKey, c.Token.PrivateKey, err = loadCertAndKey(c.Token.CertFile, c.Token.KeyFile)
 		if err != nil {
 			return nil, fmt.Errorf("failed to load token cert and key: %s", err)
 		}
@@ -157,7 +157,7 @@ func LoadConfig(fileName string) (*Config, error) {
 	}
 
 	if serverConfigured && !tokenConfigured {
-		c.Token.publicKey, c.Token.privateKey = c.Server.publicKey, c.Server.privateKey
+		c.Token.PublicKey, c.Token.PrivateKey = c.Server.PublicKey, c.Server.PrivateKey
 		tokenConfigured = true
 	}
 

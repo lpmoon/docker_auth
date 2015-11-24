@@ -3,11 +3,11 @@ package models
 import (
 	"github.com/cesanta/docker_auth/auth_server/authn"
 	"github.com/cesanta/docker_auth/auth_server/authz"
-	"github.com/cesanta/docker_auth/auth_server/server"
+	"github.com/cesanta/docker_auth/auth_server/server/config"
 )
 
 type AuthConfig struct {
-	Config         *server.Config
+	Config         *config.Config
 	Authenticators []authn.Authenticator
 	Authorizers    []authz.Authorizer
 }
@@ -18,7 +18,7 @@ type AuthConfigManager struct {
 
 var ACManager *AuthConfigManager
 
-func InitAuthConfigManager(config *server.Config, authenticators []authn.Authenticator, authorizers []authz.Authorizer) {
+func InitAuthConfigManager(config *config.Config, authenticators []authn.Authenticator, authorizers []authz.Authorizer) {
 	authConfig := &AuthConfig{Config: config, Authenticators: authenticators, Authorizers: authorizers}
 	ACManager = &AuthConfigManager{authConfig: authConfig}
 }

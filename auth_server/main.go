@@ -27,6 +27,7 @@ import (
 	"time"
 
 	"github.com/cesanta/docker_auth/auth_server/server"
+	"github.com/cesanta/docker_auth/auth_server/server/config"
 	"github.com/facebookgo/httpdown"
 	"github.com/golang/glog"
 	fsnotify "gopkg.in/fsnotify.v1"
@@ -39,9 +40,9 @@ type RestartableServer struct {
 	hs         httpdown.Server
 }
 
-func ServeOnce(c *server.Config, cf string, hd *httpdown.HTTP) (*server.AuthServer, httpdown.Server) {
+func ServeOnce(c *config.Config, cf string, hd *httpdown.HTTP) (*server.AuthServer, httpdown.Server) {
 	glog.Infof("Config from %s (%d users, %d ACL static entries)", cf, len(c.Users), len(c.ACL))
-	as, err := server.NewAuthServer(c)
+	as, ms, err := server.NewAuthServer(c)
 	if err != nil {
 		glog.Exitf("Failed to create auth server: %s", err)
 	}
@@ -87,11 +88,13 @@ func ServeOnce(c *server.Config, cf string, hd *httpdown.HTTP) (*server.AuthServ
 	if err != nil {
 		glog.Exitf("Failed to set up listener: %s", err)
 	}
+
+	ms.RunManagerServer()
 	glog.Infof("Serving")
 	return as, s
 }
 
-func (rs *RestartableServer) Serve(c *server.Config) {
+func (rs *RestartableServer) Serve(c *config.Config) {
 	rs.authServer, rs.hs = ServeOnce(c, rs.configFile, rs.hd)
 	rs.WatchConfig()
 }
@@ -142,7 +145,7 @@ func (rs *RestartableServer) WatchConfig() {
 
 func (rs *RestartableServer) MaybeRestart() {
 	glog.Infof("Restarting server")
-	c, err := server.LoadConfig(rs.configFile)
+	c, err := config.LoadConfig(rs.configFile)
 	if err != nil {
 		glog.Errorf("Failed to reload config (server not restarted): %s", err)
 		return
@@ -162,7 +165,7 @@ func main() {
 	if cf == "" {
 		glog.Exitf("Config file not specified")
 	}
-	c, err := server.LoadConfig(cf)
+	c, err := config.LoadConfig(cf)
 	if err != nil {
 		glog.Exitf("Failed to load config: %s", err)
 	}

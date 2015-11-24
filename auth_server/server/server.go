@@ -28,6 +28,8 @@ import (
 
 	"github.com/cesanta/docker_auth/auth_server/authn"
 	"github.com/cesanta/docker_auth/auth_server/authz"
+	"github.com/cesanta/docker_auth/auth_server/server/config"
+	"github.com/cesanta/docker_auth/auth_server/server/manager"
 	"github.com/docker/distribution/registry/auth/token"
 	"github.com/golang/glog"
 )
@@ -44,13 +46,13 @@ func (ar AuthRequest) String() string {
 }
 
 type AuthServer struct {
-	config         *Config
+	config         *config.Config
 	authenticators []authn.Authenticator
 	authorizers    []authz.Authorizer
 	ga             *authn.GoogleAuth
 }
 
-func NewAuthServer(c *Config) (*AuthServer, error) {
+func NewAuthServer(c *config.Config) (*AuthServer, *manager.MServer, error) {
 	as := &AuthServer{
 		config:      c,
 		authorizers: []authz.Authorizer{},
@@ -58,14 +60,14 @@ func NewAuthServer(c *Config) (*AuthServer, error) {
 	if c.ACL != nil {
 		staticAuthorizer, err := authz.NewACLAuthorizer(c.ACL)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		as.authorizers = append(as.authorizers, staticAuthorizer)
 	}
 	if c.ACLMongoConf != nil {
 		mongoAuthorizer, err := authz.NewACLMongoAuthorizer(*c.ACLMongoConf)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		as.authorizers = append(as.authorizers, mongoAuthorizer)
 	}
@@ -75,7 +77,7 @@ func NewAuthServer(c *Config) (*AuthServer, error) {
 	if c.GoogleAuth != nil {
 		ga, err := authn.NewGoogleAuth(c.GoogleAuth)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		as.authenticators = append(as.authenticators, ga)
 		as.ga = ga
@@ -83,11 +85,14 @@ func NewAuthServer(c *Config) (*AuthServer, error) {
 	if c.LDAPAuth != nil {
 		la, err := authn.NewLDAPAuth(c.LDAPAuth)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		as.authenticators = append(as.authenticators, la)
 	}
-	return as, nil
+
+	ms := manager.NewMServer(as.config, as.authenticators, as.authorizers)
+
+	return as, ms, nil
 }
 
 func (as *AuthServer) ParseRequest(req *http.Request) (*AuthRequest, error) {
@@ -162,14 +167,14 @@ func (as *AuthServer) CreateToken(ar *AuthRequest, actions []string) (string, er
 	tc := &as.config.Token
 
 	// Sign something dummy to find out which algorithm is used.
-	_, sigAlg, err := tc.privateKey.Sign(strings.NewReader("dummy"), 0)
+	_, sigAlg, err := tc.PrivateKey.Sign(strings.NewReader("dummy"), 0)
 	if err != nil {
 		return "", fmt.Errorf("failed to sign: %s", err)
 	}
 	header := token.Header{
 		Type:       "JWT",
 		SigningAlg: sigAlg,
-		KeyID:      tc.publicKey.KeyID(),
+		KeyID:      tc.PublicKey.KeyID(),
 	}
 	headerJSON, err := json.Marshal(header)
 	if err != nil {
@@ -198,7 +203,7 @@ func (as *AuthServer) CreateToken(ar *AuthRequest, actions []string) (string, er
 
 	payload := fmt.Sprintf("%s%s%s", joseBase64UrlEncode(headerJSON), token.TokenSeparator, joseBase64UrlEncode(claimsJSON))
 
-	sig, sigAlg2, err := tc.privateKey.Sign(strings.NewReader(payload), 0)
+	sig, sigAlg2, err := tc.PrivateKey.Sign(strings.NewReader(payload), 0)
 	if err != nil || sigAlg2 != sigAlg {
 		return "", fmt.Errorf("failed to sign token: %s", err)
 	}
