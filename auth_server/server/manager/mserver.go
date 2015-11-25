@@ -20,5 +20,8 @@ func NewMServer(config *config.Config, authenticators []authn.Authenticator, aut
 
 // 代理函数，实际调用beego的运行方法
 func (ms *MServer) RunManagerServer() {
+	beego.SetStaticPath("/img", "img")
+	beego.SetStaticPath("/css", "css")
+	beego.SetStaticPath("/js", "js")
 	beego.Run()
 }

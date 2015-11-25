@@ -4,7 +4,23 @@ import (
 	"github.com/cesanta/docker_auth/auth_server/authn"
 	"github.com/cesanta/docker_auth/auth_server/authz"
 	"github.com/cesanta/docker_auth/auth_server/server/config"
+
+	"sort"
 )
+
+type ByString []string
+
+func (s ByString) Len() int {
+	return len(s)
+}
+
+func (s ByString) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func (s ByString) Less(i, j int) bool {
+	return s[i] < s[j]
+}
 
 type AuthConfig struct {
 	Config         *config.Config
@@ -24,11 +40,15 @@ func InitAuthConfigManager(config *config.Config, authenticators []authn.Authent
 }
 
 func (acm *AuthConfigManager) QueryAllUser() []string {
-	authenticators := acm.authConfig.Authenticators
-	users := make([]string, len(authenticators))
-	for _, authenticator := range authenticators {
-		users = append(users, authenticator.Name())
+	userMap := acm.authConfig.Config.Users
+	users := make([]string, len(userMap))
+	i := 0
+	for key, _ := range userMap {
+		users[i] = key
+		i = i + 1
 	}
+
+	sort.Sort(ByString(users))
 
 	return users
 }
