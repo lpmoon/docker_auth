@@ -20,6 +20,9 @@ type Authorizer interface {
 	// Implementations must be goroutine-safe.
 	Authorize(ai *AuthRequestInfo) ([]string, error)
 
+	// get all aclentry which account match 'user'
+	GetMatchACLs(user string) []ACLEntry
+
 	// Finalize resources in preparation for shutdown.
 	// When this call is made there are guaranteed to be no Authenticate requests in flight
 	// and there will be no more calls made to this instance.

@@ -94,6 +94,10 @@ func NewACLMongoAuthorizer(c ACLMongoConfig) (Authorizer, error) {
 	return authorizer, nil
 }
 
+func (ma *aclMongoAuthorizer) GetMatchACLs(user string) []ACLEntry {
+	return ma.staticAuthorizer.GetMatchACLs(user)
+}
+
 func (ma *aclMongoAuthorizer) Authorize(ai *AuthRequestInfo) ([]string, error) {
 	ma.lock.RLock()
 	defer ma.lock.RUnlock()

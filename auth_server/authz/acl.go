@@ -33,6 +33,18 @@ func NewACLAuthorizer(acl ACL) (Authorizer, error) {
 	return &aclAuthorizer{acl: acl}, nil
 }
 
+func (aa *aclAuthorizer) GetMatchACLs(user string) []ACLEntry {
+	acls := make([]ACLEntry, 0)
+	// 遍历
+	for _, a := range aa.acl {
+		if a.MatcheSpecificUser(user) {
+			acls = append(acls, a)
+		}
+	}
+
+	return acls
+}
+
 func (aa *aclAuthorizer) Authorize(ai *AuthRequestInfo) ([]string, error) {
 	for _, e := range aa.acl {
 		matched := e.Matches(ai)
@@ -91,4 +103,18 @@ func (e *ACLEntry) Matches(ai *AuthRequestInfo) bool {
 		return true
 	}
 	return false
+}
+
+func (e *ACLEntry) MatcheSpecificUser(user string) bool {
+	var matched bool
+	var err error
+	p := *(e.Match.Account)
+	if len(p) > 2 && (p)[0] == '/' && p[len(p)-1] == '/' {
+		matched, err = regexp.Match(p[1:len(p)-1], []byte(user))
+	} else {
+		matched, err = path.Match(p, user)
+	}
+
+	return err == nil && matched
+
 }

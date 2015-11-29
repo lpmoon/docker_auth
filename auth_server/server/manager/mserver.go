@@ -9,6 +9,13 @@ import (
 	_ "github.com/cesanta/docker_auth/auth_server/server/manager/routers"
 )
 
+// 模板工具函数
+func add(src int, added int) int {
+	return src + added
+}
+
+//
+
 type MServer struct {
 }
 
@@ -23,5 +30,8 @@ func (ms *MServer) RunManagerServer() {
 	beego.SetStaticPath("/img", "img")
 	beego.SetStaticPath("/css", "css")
 	beego.SetStaticPath("/js", "js")
+
+	beego.AddFuncMap("add", add)
+
 	beego.Run()
 }
