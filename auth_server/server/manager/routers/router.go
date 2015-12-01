@@ -8,5 +8,5 @@ import (
 func init() {
 	beego.Router("/", &controllers.ListController{})
 	beego.Router("/query", &controllers.DetailController{})
-	beego.Router("/modify", &controllers.ModifyController{})
+	beego.Router("/modify", &controllers.ModifyController{}, "get,post:DoModify")
 }

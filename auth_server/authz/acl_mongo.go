@@ -27,6 +27,9 @@ type ACLMongoDialConfig struct {
 	PasswordFile string `yaml:"password_file,omitempty"`
 }
 
+//
+var CH = make(chan int)
+
 // Validate ensures the most common fields inside the mgo.DialInfo portion of
 // an ACLMongoDialInfo are set correctly as well as other fields inside the
 // ACLMongoConfig itself.
@@ -90,7 +93,9 @@ func NewACLMongoAuthorizer(c ACLMongoConfig) (Authorizer, error) {
 	}
 
 	go authorizer.continuouslyUpdateACLCache()
+	go authorizer.immediatelyUpdateACLCache()
 
+	//
 	return authorizer, nil
 }
 
@@ -141,6 +146,14 @@ func (ma *aclMongoAuthorizer) continuouslyUpdateACLCache() {
 
 		glog.Errorf("Failed to update ACL. ERROR: %s", err)
 		glog.Warningf("Using stale ACL (Age: %s, TTL: %s)", aclAge, ma.config.CacheTTL)
+	}
+}
+
+func (ma *aclMongoAuthorizer) immediatelyUpdateACLCache() {
+	//
+	for {
+		<-CH
+		ma.updateACLCache()
 	}
 }
 

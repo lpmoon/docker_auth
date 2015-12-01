@@ -75,15 +75,17 @@ func (acm *AuthConfigManager) Update(user string, name *string, mtype int, ispul
 	// 删除 pull push
 	acm.lock.Lock()
 	defer acm.lock.Unlock() // 强行释放锁
+	var ret bool
 	if mtype == ADD {
-		return acm.add(user, name, ispull)
+		ret = acm.add(user, name, ispull)
 	} else if mtype == DEL {
-		return acm.del(user, name, ispull)
+		ret = acm.del(user, name, ispull)
 	} else {
 		// do thing
 	}
 
-	return true
+	acm.UpdateCache()
+	return ret
 }
 
 func (acm *AuthConfigManager) add(user string, name *string, ispull bool) bool {
@@ -168,7 +170,13 @@ func (acm *AuthConfigManager) del(user string, name *string, ispull bool) bool {
 	}
 
 	collection.Update(findRule, bson.M{"$set": bson.M{"actions": []string{toremain}}})
+
 	return true
+}
+
+func (acm *AuthConfigManager) UpdateCache() {
+	// 更新
+	authz.CH <- 1
 }
 
 func (acm *AuthConfigManager) QueryDetail(user string) [][]string {

@@ -9,76 +9,23 @@
   <link rel="stylesheet" href="/static/css/custom.css" type="text/css" />
   <script type="text/javascript" src="/static/js/jquery-2.1.4.min.js" ></script>
   <script type="text/javascript" src="/static/js/bootstrap.min.js" ></script>
-  <script type="text/javascript">
-    $(document).ready(function() {
-        // 修改按钮事件绑定
-        $(".modifybtn").bind({
-            click: function() {
-                var btn_id = $(this).attr("id");
-                var lio = btn_id.lastIndexOf("_");
-                var idx = btn_id.substring(lio + 1);
-                
-                // 隐藏的label和button显示
-                
-                // 1) pull text
-                var pull_text_id = "pull_text_" + idx;
-                if ($("#" + pull_text_id).hasClass("hidden")) {
-                    $("#" + pull_text_id).removeClass("hidden");
-                }
-                // 2) pull btn
-                var pull_btn_id = "pull_btn_" + idx;
-                if ($("#" + pull_btn_id).hasClass("hidden")) {
-                    $("#" + pull_btn_id).removeClass("hidden");
-                }
-                // 3) push text
-                var push_text_id = "push_text_" + idx;
-                if ($("#" + push_text_id).hasClass("hidden")) {
-                    $("#" + push_text_id).removeClass("hidden");
-                }
-                // 4) push btn 
-                var push_btn_id = "push_btn_" + idx;
-                if ($("#" + push_btn_id).hasClass("hidden")) {
-                    $("#" + push_btn_id).removeClass("hidden");
-                }
-            
-                alert(idx);   
-                // 不该显示的label和button隐藏
-
-                $(this).removeClass(modifybtn) 
-                $(this).addClass(cancelbtn)
-            }
-        });
-
-
-
-        $(".cancelbtn").bind({
-            click: function() {
-                var btn_id = $(this).attr("id");
-                var lio = btn_id.lastIndexOf("_");
-                var idx = btn_id.substring(lio + 1);
-
-                // 根据pull 和 push btn是btn-success还是btn-danger, 判断是要隐藏还是显示按钮
-
-                
-            }
-        });
-    });
-
+  <script type="text/javascript" src="/static/js/detail.js"></script>
   </script>
 </head>
 
 <body>
 
-<div class="panel panel-default">
+<div class="panel panel-primary">
   <!-- Default panel contents -->
-  <div class="panel-heading">{{.user}}</div>
-  <div class="panel-body">
-    <pre>该面板中列出了当前用户对各个镜像的权限.
-1. 如果镜像名称为*, 表示该用户对所有镜像拥有某个权限
-2. 如果镜像名不为*, 表示该用户对特定的某个镜像拥有相应的权限
-3. 拉取权限为PULL, 推送权限为PUSH
-4. 用户可以点击操作按钮, 对该用户的权限做操作
-    </pre>
+  <div class="panel-heading" id="user">{{.user}}</div>
+  <div class="panel-body lead">
+     该面板中列出了当前用户对各个镜像的权限.
+<ol>
+<li>如果镜像名称为*, 表示该用户对所有镜像拥有某个权限</li>
+<li>如果镜像名不为*, 表示该用户对特定的某个镜像拥有相应的权限</li>
+<li>拉取权限为PULL, 推送权限为PUSH</li>
+<li>用户可以点击操作按钮, 对该用户的权限做操作</li>
+</ol>
   </div>
 
   <!-- Table -->
@@ -92,50 +39,50 @@
         {{range $idx, $value := $.detail}}
             <tr>
                 <td>{{$idx}}</td>
-                <td>{{index $value 0}}</td>
+                <td id="img_{{$idx}}">{{index $value 0}}</td>
                 <td>
                     {{if eq "3" (index $value 1)}}
                         <!-- 显示 -->
                         <span class="label label-primary btn-xs" id="pull_text_{{$idx}}">&nbspPull&nbsp</span>
-                        <button type="button" class="btn btn-danger btn-xs hidden" id="pull_btn_{{$idx}}">
+                        <button type="button" class="btn btn-danger btn-xs hidden control" id="pull_btn_{{$idx}}">
                               <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete 
                         </button>
                         <!-- 显示 -->
                         <span class="label label-success btn-xs" id="push_text_{{$idx}}">&nbspPush&nbsp</span>
-                        <button type="button" class="btn btn-danger btn-xs hidden" id="push_btn_{{$idx}}">
+                        <button type="button" class="btn btn-danger btn-xs hidden control" id="push_btn_{{$idx}}">
                               <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
                         </button>
                     {{else if eq "2" (index $value 1)}}
                         <!-- 隐藏 -->
                         <span class="label label-primary btn-xs hidden" id="pull_text_{{$idx}}">&nbspPull&nbsp</span>
-                        <button type="button" class="btn btn-success btn-xs hidden" id="pull_btn_{{$idx}}">
+                        <button type="button" class="btn btn-success btn-xs hidden control" id="pull_btn_{{$idx}}">
                               <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add 
                         </button>
                         <!-- 显示-->
                         <span class="label label-success btn-xs" id="push_text_{{$idx}}">&nbspPush&nbsp</span>
-                        <button type="button" class="btn btn-danger btn-xs hidden" id="push_btn_{{$idx}}">
+                        <button type="button" class="btn btn-danger btn-xs hidden control" id="push_btn_{{$idx}}">
                               <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
                         </button>
                     {{else if eq "1" (index $value 1)}}
                         <!-- 显示-->
                         <span class="label label-primary btn-xs" id="pull_text_{{$idx}}">&nbspPull&nbsp</span>
-                        <button type="button" class="btn btn-danger btn-xs hidden" id="pull_btn_{{$idx}}">
+                        <button type="button" class="btn btn-danger btn-xs hidden control" id="pull_btn_{{$idx}}">
                               <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
                         </button>
                         <!-- 隐藏-->
                         <span class="label label-success btn-xs hidden" id="push_text_{{$idx}}">&nbspPush&nbsp</span>
-                        <button type="button" class="btn btn-success btn-xs hidden" id="push_btn_{{$idx}}">
+                        <button type="button" class="btn btn-success btn-xs hidden control" id="push_btn_{{$idx}}">
                               <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add
                         </button>
                     {{else}}
                         <!-- 隐藏-->
                         <span class="label label-primary btn-xs hidden" id="pull_text_{{$idx}}">&nbspPull&nbsp</span>
-                        <button type="button" class="btn btn-success btn-xs hidden" id="pull_btn_{{$idx}}">
+                        <button type="button" class="btn btn-success btn-xs hidden control" id="pull_btn_{{$idx}}">
                               <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add
                         </button>
                         <!-- 隐藏-->
                         <span class="label label-success btn-xs hidden" id="push_text_{{$idx}}">&nbspPush&nbsp</span>
-                        <button type="button" class="btn btn-success btn-xs hidden" id="push_btn_{{$idx}}">
+                        <button type="button" class="btn btn-success btn-xs hidden control" id="push_btn_{{$idx}}">
                               <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add 
                         </button>
                     {{end}}
@@ -155,6 +102,5 @@
         {{end}}
   </table>
 </div>
-
 </body>
 </html>

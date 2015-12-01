@@ -10,7 +10,7 @@ type ModifyController struct {
 	beego.Controller
 }
 
-func (c *ModifyController) Get() {
+func (c *ModifyController) DoModify() {
 	// 参数获取
 	glog.Infoln("--modify request start--")
 	user := c.GetString("user")
