@@ -36,6 +36,7 @@ type Config struct {
 	Users        map[string]*authn.Requirements `yaml:"users,omitempty"`
 	GoogleAuth   *authn.GoogleAuthConfig        `yaml:"google_auth,omitempty"`
 	LDAPAuth     *authn.LDAPAuthConfig          `yaml:"ldap_auth,omitempty"`
+	MongoAuth    *authn.MongoAuthConfig         `yaml:"mongo_auth,omitempty"`
 	ACL          authz.ACL                      `yaml:"acl"`
 	ACLMongoConf *authz.ACLMongoConfig          `yaml:"acl_mongo"`
 }
@@ -71,7 +72,7 @@ func validate(c *Config) error {
 	if c.Token.Expiration <= 0 {
 		return fmt.Errorf("expiration must be positive, got %d", c.Token.Expiration)
 	}
-	if c.Users == nil && c.GoogleAuth == nil && c.LDAPAuth == nil {
+	if c.Users == nil && c.GoogleAuth == nil && c.LDAPAuth == nil && c.MongoAuth == nil {
 		return errors.New("no auth methods are configured, this is probably a mistake. Use an empty user map if you really want to deny everyone.")
 	}
 	if gac := c.GoogleAuth; gac != nil {
@@ -89,6 +90,13 @@ func validate(c *Config) error {
 			gac.HTTPTimeout = 10
 		}
 	}
+	// validate mongoauth
+	if c.MongoAuth != nil {
+		if err := c.MongoAuth.Validate(); err != nil {
+			return err
+		}
+	}
+
 	//
 	if c.ACL == nil && c.ACLMongoConf == nil {
 		return errors.New("ACL is empty, this is probably a mistake. Use an empty list if you really want to deny all actions")

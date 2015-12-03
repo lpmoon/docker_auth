@@ -6,11 +6,11 @@ import (
 	"github.com/golang/glog"
 )
 
-type ModifyController struct {
+type ModifyUserAuthController struct {
 	beego.Controller
 }
 
-func (c *ModifyController) DoModify() {
+func (c *ModifyUserAuthController) DoModify() {
 	// 参数获取
 	glog.Infoln("--modify request start--")
 	user := c.GetString("user")

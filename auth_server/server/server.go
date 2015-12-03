@@ -90,6 +90,15 @@ func NewAuthServer(c *config.Config) (*AuthServer, *manager.MServer, error) {
 		as.authenticators = append(as.authenticators, la)
 	}
 
+	// mongoauth
+	if c.MongoAuth != nil {
+		ma, err := authn.NewMongoAuth(c.MongoAuth)
+		if err != nil {
+			return nil, nil, err
+		}
+		as.authenticators = append(as.authenticators, ma)
+	}
+	//
 	ms := manager.NewMServer(as.config, as.authenticators, as.authorizers)
 
 	return as, ms, nil

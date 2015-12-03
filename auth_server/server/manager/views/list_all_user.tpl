@@ -35,9 +35,18 @@
     {{range $index, $value := .names}}
         <tr>
             <td>{{$index}}</td>
-            <td id="value_{{$index}}">{{$value}}</td>
-            <td><button type="button" class="btn btn-success query" id="query_btn_{{$index}}">&nbsp查看&nbsp</button></td>
-            <td><button type="button" class="btn btn-danger delete">&nbsp删除&nbsp</button></td>
+            <td id="value_{{$index}}">{{index $value 0}}</td>
+            <td>
+                <button type="button" class="btn btn-success query" id="query_btn_{{$index}}">&nbsp查看&nbsp</button>
+            </td>
+            <td>
+                {{if eq "0" (index $value 1)}}
+                <button type="button" disabled="disabled" class="btn btn-danger delete" id="delete_btn_{{$index}}">&nbsp删除&nbsp</button>
+                {{else}}
+                <button type="button" class="btn btn-danger delete" id="delete_btn_{{$index}}">&nbsp删除&nbsp</button>
+                {{end}}
+            </td>
+
         </tr>
     {{end}}
   </table>

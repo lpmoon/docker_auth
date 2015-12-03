@@ -14,12 +14,16 @@
 </head>
 
 <body>
+<div class="container-fluid">
+<div class="row">
 
-<div class="panel panel-primary">
+{{template "/left_bar.tpl" .}}
+
+<div class="col-sm-offset-2 panel panel-info">
   <!-- Default panel contents -->
-  <div class="panel-heading" id="user">{{.user}}</div>
+  <div class="panel-heading ">所有权限</div>
   <div class="panel-body lead">
-     该面板中列出了当前用户对各个镜像的权限.
+     该面板中列出了系统中所有的权限.
 <ol>
 <li>如果镜像名称为*, 表示该用户对所有镜像拥有某个权限</li>
 <li>如果镜像名不为*, 表示该用户对特定的某个镜像拥有相应的权限</li>
@@ -32,16 +36,19 @@
   <table class="table table-hover">
     <tr>
         <th>编号</th>
+        <th>用户名</th>
         <th>镜像名称</th>
         <th>权限</th>
         <th>修改</th>
+        <th>删除</th>
     </tr>
         {{range $idx, $value := $.detail}}
             <tr>
                 <td>{{$idx}}</td>
-                <td id="img_{{$idx}}">{{index $value 0}}</td>
+                <td id="user_{{$idx}}">{{index $value 0}}</td>
+                <td id="img_{{$idx}}">{{index $value 1}}</td>
                 <td>
-                    {{if eq "3" (index $value 1)}}
+                    {{if eq "3" (index $value 2)}}
                         <!-- 显示 -->
                         <span class="label label-primary btn-xs" id="pull_text_{{$idx}}">&nbspPull&nbsp</span>
                         <button type="button" class="btn btn-danger btn-xs hidden control" id="pull_btn_{{$idx}}">
@@ -52,7 +59,7 @@
                         <button type="button" class="btn btn-danger btn-xs hidden control" id="push_btn_{{$idx}}">
                               <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
                         </button>
-                    {{else if eq "2" (index $value 1)}}
+                    {{else if eq "2" (index $value 2)}}
                         <!-- 隐藏 -->
                         <span class="label label-primary btn-xs hidden" id="pull_text_{{$idx}}">&nbspPull&nbsp</span>
                         <button type="button" class="btn btn-success btn-xs hidden control" id="pull_btn_{{$idx}}">
@@ -63,7 +70,7 @@
                         <button type="button" class="btn btn-danger btn-xs hidden control" id="push_btn_{{$idx}}">
                               <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
                         </button>
-                    {{else if eq "1" (index $value 1)}}
+                    {{else if eq "1" (index $value 2)}}
                         <!-- 显示-->
                         <span class="label label-primary btn-xs" id="pull_text_{{$idx}}">&nbspPull&nbsp</span>
                         <button type="button" class="btn btn-danger btn-xs hidden control" id="pull_btn_{{$idx}}">
@@ -88,7 +95,7 @@
                     {{end}}
                 </td>
                 <td>
-                {{if eq "0" (index $value 2)}}
+                {{if eq "0" (index $value 3)}}
                     <button type="button" class="btn btn-primary btn-xs" disabled="disabled">
                         修改
                     </button>
@@ -98,9 +105,23 @@
                     </button>
                 {{end}}
                 </td>
+                <td>
+                {{if eq "0" (index $value 3)}}
+                    <button type="button" class="btn btn-primary btn-xs" disabled="disabled">
+                        删除 
+                    </button>
+                {{else}}
+                    <button type="button" class="btn btn-primary btn-xs deletebtn" id="delete_btn_{{$idx}}">
+                        删除
+                    </button>
+                {{end}}
+                </td>
+
             </tr>
         {{end}}
   </table>
+</div>
+</div>
 </div>
 </body>
 </html>

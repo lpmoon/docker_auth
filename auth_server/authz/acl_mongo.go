@@ -99,6 +99,10 @@ func NewACLMongoAuthorizer(c ACLMongoConfig) (Authorizer, error) {
 	return authorizer, nil
 }
 
+func (ma *aclMongoAuthorizer) GetAllACLs() []ACLEntry {
+	return ma.staticAuthorizer.GetAllACLs()
+}
+
 func (ma *aclMongoAuthorizer) GetMatchACLs(user string) []ACLEntry {
 	return ma.staticAuthorizer.GetMatchACLs(user)
 }

@@ -6,12 +6,12 @@ import (
 	"github.com/cesanta/docker_auth/auth_server/server/manager/models"
 )
 
-type ListController struct {
+type ListAllUserController struct {
 	beego.Controller
 }
 
-func (c *ListController) Get() {
+func (c *ListAllUserController) Get() {
 	// 选择list模板
-	c.TplNames = "list.tpl"
+	c.TplNames = "list_all_user.tpl"
 	c.Data["names"] = models.ACManager.QueryAllUser()
 }

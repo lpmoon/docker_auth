@@ -33,6 +33,10 @@ func NewACLAuthorizer(acl ACL) (Authorizer, error) {
 	return &aclAuthorizer{acl: acl}, nil
 }
 
+func (aa *aclAuthorizer) GetAllACLs() []ACLEntry {
+	return aa.acl
+}
+
 func (aa *aclAuthorizer) GetMatchACLs(user string) []ACLEntry {
 	acls := make([]ACLEntry, 0)
 	// 遍历

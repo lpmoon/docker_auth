@@ -23,6 +23,9 @@ type Authorizer interface {
 	// get all aclentry which account match 'user'
 	GetMatchACLs(user string) []ACLEntry
 
+	// get all aclentry
+	GetAllACLs() []ACLEntry
+
 	// Finalize resources in preparation for shutdown.
 	// When this call is made there are guaranteed to be no Authenticate requests in flight
 	// and there will be no more calls made to this instance.

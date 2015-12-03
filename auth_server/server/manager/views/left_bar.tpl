@@ -7,4 +7,7 @@
    <li><a href="/showaddauth"><i class="glyphicon glyphicon-flag"></i> 添加权限</a></li>
    <li><a href="/showallauth"><i class="glyphicon glyphicon-search"></i> 查询所有权限</a></li>
  </ul>
+ <ul class="nav nav-sidebar">
+   <li><a href="/about"><i class="glyphicon glyphicon-book"></i> 关于</a></li>
+ </ul>
 </div>

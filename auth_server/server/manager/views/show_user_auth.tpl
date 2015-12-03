@@ -39,6 +39,7 @@
         <th>镜像名称</th>
         <th>权限</th>
         <th>修改</th>
+        <th>删除</th>
     </tr>
         {{range $idx, $value := $.detail}}
             <tr>
@@ -101,6 +102,19 @@
                         修改
                     </button>
                 {{end}}
+                </td>
+                <td>
+                <td>
+                {{if eq "0" (index $value 2)}}
+                    <button type="button" class="btn btn-primary btn-xs" disabled="disabled">
+                        删除  
+                    </button>
+                {{else}}
+                    <button type="button" class="btn btn-primary btn-xs deletebtn" id="delete_btn_{{$idx}}">
+                        删除
+                    </button>
+                {{end}}
+
                 </td>
             </tr>
         {{end}}

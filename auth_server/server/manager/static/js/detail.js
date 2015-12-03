@@ -11,6 +11,33 @@ String.prototype.startWith = function(str) {
 }
 
 $(document).ready(function() {
+
+    $(".deletebtn").bind({
+        click: function() {
+            var btn_id = $(this).attr("id");
+            var lio = btn_id.lastIndexOf("_");
+            var idx = btn_id.substring(lio + 1);
+            
+            var name = $("#img_" + idx).html();
+            var user = ""
+            if ($("#user").length == 0) {
+                user = $("#user_" + idx).html();
+            } else {
+                user = $("#user").html();
+            }
+
+            $.ajax({
+                method: "POST",
+                url: "/deleteauth",
+                data: {"user": user, "name": name}
+            }).done(function(data){
+                location.reload()
+            }).fail(function(data){
+                // 处理
+            });
+        }
+    });
+
     // 修改按钮事件绑定
     $(".modifybtn").bind({
         click: function() {
@@ -58,11 +85,12 @@ $(document).ready(function() {
                 var pull_btn = $("#" + pull_btn_id); 
                 if (pull_btn.hasClass("btn-success")) {
                     // 隐藏btn
+                    $("#" + "pull_text_" + idx).addClass("hidden");
                     pull_btn.addClass("hidden");
                 } else if (pull_btn.hasClass("btn-danger")) {
                     // 隐藏btn和隐藏label
                     pull_btn.addClass("hidden");
-                    $("#" + "pull_text_" + idx).addClass("hidden");
+                    // $("#" + "pull_text_" + idx).addClass("hidden");
                 } else {
                 
                 }
@@ -71,10 +99,11 @@ $(document).ready(function() {
                 if (push_btn.hasClass("btn-success")) {
                     // 隐藏btn
                     push_btn.addClass("hidden");
+                    $("#" + "push_text_" + idx).addClass("hidden");
                 } else if (push_btn.hasClass("btn-danger")) {
                     // 隐藏btn和隐藏label
                     push_btn.addClass("hidden");
-                    $("#" + "push_text_" + idx).addClass("hidden");
+                    // $("#" + "push_text_" + idx).addClass("hidden");
                 } else {
                 
                 }
@@ -96,7 +125,12 @@ $(document).ready(function() {
                 name = "";    
             }
             // 获取用户名
-            var user = $("#user").html();
+            var user = ""
+            if ($("#user").length == 0) {
+                user = $("#user_" + idx).html();
+            } else {
+                user = $("#user").html();
+            }
             // 获取删除还是添加
             
             var mtype;

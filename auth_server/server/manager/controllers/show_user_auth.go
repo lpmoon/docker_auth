@@ -5,11 +5,11 @@ import (
 	"github.com/cesanta/docker_auth/auth_server/server/manager/models"
 )
 
-type DetailController struct {
+type ShowUserAuthController struct {
 	beego.Controller
 }
 
-func (c *DetailController) Get() {
+func (c *ShowUserAuthController) Get() {
 	// c.TplNames = "index.tpl"
 
 	user := c.GetString("user")
@@ -17,5 +17,5 @@ func (c *DetailController) Get() {
 	c.Data["user"] = user
 	c.Data["detail"] = detail
 	c.Data["idx"] = 1
-	c.TplNames = "detail.tpl"
+	c.TplNames = "show_user_auth.tpl"
 }
