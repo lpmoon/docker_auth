@@ -17,4 +17,6 @@ func init() {
 	beego.Router("/addauth", &controllers.AddAuthController{}, "get,post:DoAddAuth")
 	beego.Router("/deleteauth", &controllers.DeleteAuthController{}, "get,post:DoDeleteAuth")
 	beego.Router("/showallauth", &controllers.ShowAllAuthController{})
+
+	beego.Router("/auth/query", &controllers.ShowUserAuthJsonController{})
 }

@@ -104,7 +104,6 @@
                 {{end}}
                 </td>
                 <td>
-                <td>
                 {{if eq "0" (index $value 2)}}
                     <button type="button" class="btn btn-primary btn-xs" disabled="disabled">
                         删除  
