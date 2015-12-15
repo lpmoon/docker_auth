@@ -2,6 +2,7 @@ package authn
 
 import (
 	"errors"
+	"github.com/golang/glog"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -75,8 +76,7 @@ func (ma *MongoAuth) Authenticate(user string, password PasswordString) (bool, e
 	// 获取连接
 	collection := ma.session.DB(ma.config.DialInfo.DialInfo.Database).C(ma.config.Collection)
 	var userInfos []UserInfo
-	collection.Find(bson.M{"user": user}).All(&userInfos)
-
+	collection.Find(bson.M{"username": user}).All(&userInfos)
 	if len(userInfos) == 0 {
 		return false, nil
 	}
@@ -96,5 +96,5 @@ func (ma *MongoAuth) Stop() {
 }
 
 func (ma *MongoAuth) Name() string {
-	return "MONGO"
+	return "Mongo"
 }
