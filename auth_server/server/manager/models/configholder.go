@@ -1,5 +1,6 @@
 package models
 
+// TODO it is too large
 import (
 	"fmt"
 	"github.com/cesanta/docker_auth/auth_server/authn"
@@ -56,6 +57,31 @@ func InitAuthConfigManager(config *config.Config, authenticators []authn.Authent
 	}
 	ACManager = &AuthConfigManager{authConfig: authConfig, session: session, userSession: userSession}
 }
+
+// ======================================= 登陆相关=========================================
+func (acm *AuthConfigManager) DoLogin(user string, password string) (string, bool) {
+	for _, a := range acm.authConfig.Authenticators {
+		result, err := a.Authenticate(user, authn.PasswordString(password))
+		// glog.V(2).Infof("Authn %s %s -> %t, %s", a.Name(), ar.ai.Account, result, err)
+		if err != nil {
+			if err == authn.NoMatch {
+				continue
+			}
+			// err = fmt.Errorf("authn #%d returned error: %s", i+1, err)
+			// glog.Errorf("%s: %s", ar, err)
+			return err.Error(), false
+		}
+		return "", result
+	}
+	// Deny by default.
+	// glog.Warningf("%s did not match any authn rule", ar.ai)
+	return "", false
+}
+
+/*
+func (acm *AuthConfigManager) DoLogout(user string, password string) (string, bool) {
+}
+*/
 
 // ======================================== 用户相关=========================================
 func (acm *AuthConfigManager) AddUser(user string, password string) (string, bool) {

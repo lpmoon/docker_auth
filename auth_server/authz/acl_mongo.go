@@ -92,6 +92,7 @@ func NewACLMongoAuthorizer(c ACLMongoConfig) (Authorizer, error) {
 		return nil, err
 	}
 
+	// TODO if use multiply cpu cores
 	go authorizer.continuouslyUpdateACLCache()
 	go authorizer.immediatelyUpdateACLCache()
 

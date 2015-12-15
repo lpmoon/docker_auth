@@ -17,6 +17,13 @@ func (c *AddUserController) DoAddUser() {
 	password := c.GetString("password")
 	glog.Infof("password is %s \n", password)
 
+	password = models.EncrptByHtpasswd(username, password)
+	if password == "" {
+		ret := map[string]interface{}{"success": false}
+		c.Data["json"] = ret
+		c.ServeJson()
+		return
+	}
 	_, success := models.ACManager.AddUser(username, password)
 
 	ret := map[string]interface{}{"success": success}
